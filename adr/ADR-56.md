@@ -1,4 +1,4 @@
-# JetStream Consistency Models
+# JetStream Persistence Models
 
 | Metadata | Value        |
 |----------|--------------|
@@ -7,9 +7,9 @@
 | Status   | Approved     |
 | Tags     | server, 2.12 |
 
-| Revision | Date       | Author     | Info                                        |
-|----------|------------|------------|---------------------------------------------|
-| 1        | 2025-09-12 | @ripienaar | Initial document for R1 `async` consistency |
+| Revision | Date       | Author     | Info                                 |
+|----------|------------|------------|--------------------------------------|
+| 1        | 2025-09-12 | @ripienaar | Initial document for R1 `async` mode |
 
 ## Context and Problem Statement
 
@@ -21,9 +21,11 @@ This document intends to document the models it support, the promises it makes a
 > This document is a living document; at present we will only cover the `async` persistence model with an aim to expand in time
 > 
 
-## R1 `async` Write Consistency
+## R1 `async` Persistence
 
-The `async` consistency model of a stream will result in asynchronous flushing of data to disk, this result in a significant speed-up as each message will not be written to disk but at the expense of data loss during severe disruptions in power, server or disk subsystems.
+The `async` persistence model of a stream will result in asynchronous flushing of data to disk, this result in a significant speed-up as each message will not be written to disk but at the expense of data loss during severe disruptions in power, server or disk subsystems.
+
+Setting this on a Stream with the `sync = always` option in the server config will disable that setting for this stream.
 
 At the moment this mode cannot support batch publishing at all and any attempt to start a batch against a stream in this mode must fail.
 
@@ -34,8 +36,8 @@ At the moment this mode cannot support batch publishing at all and any attempt t
 
 ### Configuration:
 
- * The `WriteConsistency` key should be unset or `strong` for the default strongest possible consistency level
+ * The `PersistMode` key should be unset or `default` for the default strongest possible consistency level
  * Setting it on anything other than a R1 stream will result in an error
- * Scaling a R1 stream up to greater resiliency levels will fail if the `WriteConsistency` is not set to `async`
- * When the user provides no value for `WriteConsistency` the implied default is `strong` but the server will not set this in the configuration, result of INFO requests will also have it unset 
+ * Scaling a R1 stream up to greater resiliency levels will fail if the `PersistMode` is not set to `async`
+ * When the user provides no value for `PersistMode` the implied default is `default` but the server will not set this in the configuration, result of INFO requests will also have it unset 
 
